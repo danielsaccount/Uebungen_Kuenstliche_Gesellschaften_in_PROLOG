@@ -1,0 +1,83 @@
+:- dynamic fact/3 .
+
+% "create" (this module generates characters and data in SMASS)
+
+
+
+make_characters(AS,L) :- build_up_characters(AS,L),
+   export_results(AS).
+
+build_up_characters(AS,L) :- length(L,E), 
+
+notrace,
+  ( between(1,E,X), make_distribution(X,L,E,AS), fail ; true ),
+  ( between(1,AS,A), collect_characters(L,E,A), fail ; true),    
+  retractall(dd_expr(M1,M2,M3)), !. 
+ 
+make_distribution(X,L,E,AS) :- nth1(X,L,M), weights(M,EX,LIST),
+  make_discrete_distribution(M,AS,EX,LIST), !.
+
+collect_characters(L,E,A) :- asserta(character(A,[])),
+  ( between(1,E,X), nth1(X,L,M), add_character(M,A), fail; true ),!.
+
+add_character(M,A) :- dd_expr(M,A,C), character(A,L1), append(L1,[C],L2),
+  retract(character(A,L1)), asserta(character(A,L2)),!.
+
+export_results(AS) :- ( between(1,AS,A), export_res(A), fail; true),!.
+
+export_res(A) :- character(A,L2), calculate_sum(L2,SUM), 
+  append(data),
+  write(fact(0,0,character(A,L2,SUM))), write('.'), nl,  told,
+  retract(character(A,L2)),!.
+
+
+% ---------------------------------------------------------------------------------
+
+make(wealth_dono) :- actors(AS), domain_of_wealth_dono(L,U),
+   sigma_wealth_dono(SI), normal_distribution(wealth_dono,AS,L,U,SI),
+   (   between(1,AS,A), nd_expr(wealth_dono,A,W), append(data),
+       write(fact(0,0,wealth_dono(A,W))), write('.'), nl, told,
+       retract(nd_expr(wealth_dono,A,W)), fail 
+   ; true 
+   ),!.
+
+make(wealth_take) :- actors(AS), domain_of_wealth_take(L,U),
+    sigma_wealth_take(SI), normal_distribution(wealth_take,AS,L,U,SI),
+    (  between(1,AS,A), nd_expr(wealth_take,A,W), append(data),
+       write(fact(0,0,wealth_take(A,W))), write('.'), nl, told,  
+       retract(nd_expr(wealth_take,A,W)), fail 
+    ; true 
+    ),!.         
+
+make(strength) :- actors(AS), weights(strength,LIST),              
+   expressions(strength,EX),
+   make_discrete_distribution(strength,AS,EX,LIST),
+   (  between(1,AS,A), dd_expr(strength,A,W), append(data),
+      write(fact(0,0,strength(A,W))), write('.'), nl, told,  
+      retract(dd_expr(strength,A,W)), fail
+   ; true 
+   ),!. 
+         
+make(location) :- actors(AS), gridwidth(G), G1 is G*G,    
+   findall(X,between(1,G1,X), L), asserta(cell_list(L)),         
+   ( between(1,AS,A), locate(A), fail ; true), 
+   retractall(cell_list(L2)),!.
+
+locate(A) :- cell_list(L), length(L,E), X is random(E)+1, nth1(X,L,Y),
+  gridwidth(G), decompose(Y,I,J,G), 
+  append(data), write(fact(0,0,location(A,I,J))), write('.'), nl, told,
+  asserta(int_loc(A,I,J)),
+  delete(L,Y,L1),
+  retract(cell_list(L)), asserta(cell_list(L1)),!.
+
+make(colour) :- actors(AS),
+  ( between(1,AS,A), set_colour(A), fail ; true),!.
+
+set_colour(A) :- 
+  int_loc(A,I,J),
+  N is I+J,
+  N1 is N mod 2, append(data),
+  (   N1 =:= 0, write(fact(0,0,colour(A,white))), write('.'), nl
+  ;     
+     write(fact(0,0,colour(A,black))), write('.'), nl
+  ), told, nl, !.

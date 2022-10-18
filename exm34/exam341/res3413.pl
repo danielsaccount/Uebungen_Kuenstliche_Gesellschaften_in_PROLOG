@@ -1,0 +1,10 @@
+battle(5, 106).
+battle(4, 59).
+battle(3, 34).
+battle(2, 3).
+battle(1, 22).
+battle(5, 45).
+battle(4, 70).
+battle(3, 71).
+battle(2, 40).
+battle(1, 100).

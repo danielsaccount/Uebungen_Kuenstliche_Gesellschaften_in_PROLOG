@@ -1,0 +1,102 @@
+% pred352.pl (auxiliary predicates for SMASS)
+
+:- dynamic fact/3 .
+
+normal_distribution(N,AS,L,U,SI) :- MU is L + (0.5 * (U-L)),
+   ( between(1,AS,A), determine_nd_value(N,MU,SI,L,U,A), fail; true),!.
+
+determine_nd_value(N,MU,SI,L,U,A) :- repeat, X is
+   random(10001)+1,
+   X4 is (1/10000) * (((X-1) * U)+(10001-X) * L), W is integer(X4),
+   PI is pi, X1 is 2*(PI * (SI * SI)), X2 is (1 / sqrt(X1)),
+   X3 is (-((W-MU)*(W-MU))) / (SI*SI), Y is X2 * exp(X3),
+   W1 is random(10001)+1, Z is (W1-1)/10000, Z =< Y, between(L,U,W),
+   asserta(nd_expr(N,A,W)), !.
+
+make_discrete_distribution(N,AS,EX,LIST) :-
+  (  between(1,AS,A), determine_dd_value(N,A,EX,LIST), fail; true ),!.
+
+determine_dd_value(N,A,EX,LIST) :- X is random(100)+1,
+  between(1,EX,Z), nth1(Z,LIST,W_Z), X < W_Z, assert( dd_expr(N,A,Z)),!.
+
+calculate_sum(L,S) :- asserta(counter(0)), length(L,E),
+  ( between(1,E,X), auxpred(L,X) , fail ; true), counter(S),
+  retract(counter(S)).
+
+auxpred(L,X) :- nth1(X,L,N), counter(C), C1 is C+N,
+    retract(counter(C)), asserta(counter(C1)), !.    
+
+make_nbh(moore,N,I,J,L) :- gridwidth(G), ( N=1, moore_nbh_1(G,I,J,L)
+   ; 1 < N, moore_nbh_1(G,I,J,L2), asserta(auxlist(I,J,L2)),
+     length(L2,K), (  between(1,K,X), mnbh(X,L2,N,G,I,J), fail ; true),
+     auxlist(I,J,L5), delete(L5,[I,J],L6), sort(L6,L),
+     retractall(auxlist(A,B,L8))                            
+   ),!.                                                       
+
+mnbh(X,L2,N,G,I,J) :- nth1(X,L2,Y), Y=[I1,J1], N1 is N-1,   
+  make_nbh(moore,N1,I1,J1,L3), auxlist(I,J,L4), append(L4,L3,L5), 
+  retract(auxlist(I,J,L4)), asserta(auxlist(I,J,L5)), !.          
+
+moore_nbh_1(G,I,J,L) :- recalculate_neg(G,I,1,Im),             
+  recalculate_neg(G,J,1,Jm), recalculate_pos(G,I,1,Ip),          
+  recalculate_pos(G,J,1,Jp),                                       
+  L = [[I,Jm],[Im,Jm],[Im,J],[Im,Jp],[I,Jp],[Ip,Jp],[Ip,J],[Ip,Jm]].
+
+recalculate_neg(G,I,H,I1) :- X is I-H, (  (  0 < X, I1 is X
+  ; 0 =:= X, I1 is G ) ; X < 0, I1 is (G+I)- H ),!.          
+
+recalculate_pos(G,I,H,I1) :- X is I+H, (  ( I < G, X =< G, I1 is X
+  ; I =:= G, (H > 0, I1 is H; H =:= 0, I1 is G) ) ; I < G, X > G, 
+    I1 is (H+I)-G ),!. 
+
+make_nbh(von_Neumann,N,I,J,L) :- gridwidth(G), (  N=1,
+   von_Neumann_nbh_1(G,I,J,L) ; 1 < N, von_Neumann_nbh_1(G,I,J,L2),
+   asserta(auxlist(I,J,L2)), length(L2,K),
+   (  between(1,K,X), vNnbh(X,L2,N,G,I,J), fail ; true),
+   auxlist(I,J,L5),    
+   delete(L5,[I,J],L6),
+   sort(L6,L), 
+   retractall(auxlist(A,B,L8))  ),!.
+                        
+vNnbh(X,L2,N,G,I,J) :- nth1(X,L2,Y), Y=[I1,J1], N1 is N-1,
+   make_nbh(von_Neumann,N1,I1,J1,L3), auxlist(I,J,L4), append(L4,L3,L5),
+   retract(auxlist(I,J,L4)), asserta(auxlist(I,J,L5)), !.
+
+von_Neumann_nbh_1(G,I,J,L) :- recalculate_neg(G,I,1,Im),   
+  recalculate_neg(G,J,1,Jm), recalculate_pos(G,I,1,Ip),      
+  recalculate_pos(G,J,1,Jp), L = [[I,Jm],[Im,J],[I,Jp],[Ip,J]].
+
+decompose(Y,I,J,G) :- between(1,G,Z), Y =< Z*G, Z1 is Z-1, I is Z,
+  J is Y-(Z1*G),!.
+
+cartprod(NList,[]) :- member(NList,[]),!.
+cartprod(NList,undef) :- length(NList,1),!.
+cartprod([AL,BL|Rest],CL) :- cart(AL,BL,C),
+    extend_cart_tuple([C|Rest],CL).
+
+extend_cart_tuple([C|[]],C).
+extend_cart_tuple([TupleList,Next|Rest],CL) :-
+   help_extend_cart_tuple(TupleList,Next,ETupleList),
+   extend_cart_tuple([ETupleList|Rest],CL).
+
+help_extend_cart_tuple([],_,[]).
+help_extend_cart_tuple([T|TupleList],List,ExtTupel) :-
+   extend_tuple(T,List,EList),
+   help_extend_cart_tuple(TupleList,List,IList),
+   append(EList,IList,ExtTupel).
+
+extend_tuple(_,[],[]).
+extend_tuple(T,[E|Rest],[ExtT|ERest]) :-
+    append(T,[E],ExtT),
+    extend_tuple(T,Rest,ERest).
+   
+cart([],_,[]) :- !.
+cart(-,[],[]) :- !.
+cart([A|ARest],BL,CL) :-
+    create_tuple(A,BL,TList),
+    cart(ARest,BL,CInterim),
+    append(TList,CInterim,CL).
+
+create_tuple(_,[],[]).
+create_tuple(A,[B|BRest],[[A,B]|TRest]) :- create_tuple(A,BRest,TRest). 
+

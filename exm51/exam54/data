@@ -1,0 +1,42 @@
+fact(0, 0, character(1, [1, 1, 1], 3)).
+fact(0, 0, character(2, [2, 1, 1], 4)).
+fact(0, 0, character(3, [2, 1, 1], 4)).
+fact(0, 0, character(4, [1, 1, 1], 3)).
+fact(0, 0, character(5, [2, 1, 1], 4)).
+fact(0, 0, character(6, [2, 1, 1], 4)).
+fact(0, 0, character(7, [1, 1, 1], 3)).
+fact(0, 0, wealth_dono(1, 286)).
+fact(0, 0, wealth_dono(2, 285)).
+fact(0, 0, wealth_dono(3, 255)).
+fact(0, 0, wealth_dono(4, 263)).
+fact(0, 0, wealth_dono(5, 264)).
+fact(0, 0, wealth_dono(6, 262)).
+fact(0, 0, wealth_dono(7, 274)).
+fact(0, 0, location(1, 1, 4)).
+fact(0, 0, location(2, 1, 3)).
+fact(0, 0, location(3, 4, 2)).
+fact(0, 0, location(4, 2, 4)).
+fact(0, 0, location(5, 2, 1)).
+fact(0, 0, location(6, 4, 4)).
+fact(0, 0, location(7, 2, 2)).
+fact(0, 0, colour(1, black)).
+fact(0, 0, colour(2, white)).
+fact(0, 0, colour(3, white)).
+fact(0, 0, colour(4, white)).
+fact(0, 0, colour(5, black)).
+fact(0, 0, colour(6, white)).
+fact(0, 0, colour(7, white)).
+fact(0, 0, strength(1, 1)).
+fact(0, 0, strength(2, 1)).
+fact(0, 0, strength(3, 1)).
+fact(0, 0, strength(4, 1)).
+fact(0, 0, strength(5, 2)).
+fact(0, 0, strength(6, 2)).
+fact(0, 0, strength(7, 1)).
+fact(0, 0, wealth_take(1, 151)).
+fact(0, 0, wealth_take(2, 153)).
+fact(0, 0, wealth_take(3, 110)).
+fact(0, 0, wealth_take(4, 140)).
+fact(0, 0, wealth_take(5, 131)).
+fact(0, 0, wealth_take(6, 161)).
+fact(0, 0, wealth_take(7, 148)).

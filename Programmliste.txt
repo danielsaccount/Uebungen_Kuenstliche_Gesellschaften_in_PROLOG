@@ -1,0 +1,108 @@
+Liste von Programmen, die im Buch zur Übung oder als Beispiel verwendet werden 
+können:
+
+141: ein neuer Fakt wird erzeugt
+142: ein neuer Fakt wird erzeugt und in eine neue Datei gechrieben
+143: ein Mini-Programm für eine empirische Theorie über das Mögen
+144: die Anfangsfakten werden aus einer externe Datei geholt. Diese Fakten
+     lassen sich auch löschen. 
+145: ein Fakt aus der Datenbasis wird durch einen neuen Fakt ersetzt, wobei 
+     ein weiterer Fakt in einer externen Datei schon vorhanden sein muss. 
+
+161: Einbindung einer Schleife mit between in die Umgebung eines Programms
+162: eine  between-Schleife mit Vor- und Nachbereitungsphase formuliert
+163: eine Programmierung einer offenen Schleife
+164: es wird zwischen Zählindex und dem jeweiligen in dem Schleifenschritt 
+     bearbeitet Objekt unterschieden
+165: eine Schleife, wie sie in der Informatik verwendet wird.
+
+211: messages werden mit mailbox, lister und transformer weiter geleitet
+     und gefiltert.
+
+221: in einer Handlung wird eine Variable durch eine Eigenschaft oder durch
+     einen Zustand instantiiert 
+222: ein Beispiel für findall. 
+
+231: ein diskret ("dd") verteilte Funktion wird erzeugt 
+232: der Charakter der Akteure wird diskret und kumulativ zufällig erzeugt
+233: eine Gauss'sche Glockenkurve ("Normalverteilung") wird zufällig erzeugt.
+
+241: eine Liste von Handlungstypen für verschiedene Muster (roles) wird reduziert
+242: Erzeugung von Farben ("colours")
+243: in einem zweidimensionalen Zellraster werden die Orte ("positions") der
+     Akteure erzeugt
+244: in einem eindimensionalen Zellraster werden die Orte ("positions") der
+     Akteure erzeugt
+245: die Klause für "investigate" für das Schelling-Modell wird programmiert. 
+
+251: Verbindung von zwei Handlungstypen (essen und trinken) 
+252: Erzeugung einer Liste von Akteurslisten (Gruppen)
+253: in einer Gruppe wird eine Gruppenhandlung ausgewählt
+254: in einer Krisen "bearbeitet" ein Akteur seine Feinde.
+
+261: jeder Name bekommt eine Identifikationsnummer
+262: eine sehr Erzeugung von Genen.
+
+311: einfache Ereignissen (events) werden für einen Akteur zufällig erzeugt
+312: für jeden Akteur wird eine Liste von Listen von Ereignissen erzeugt
+313: Erzeugung eines System von Überzeugungen (beliefs) für einen Akteur
+     zu einem Tick 
+314: eine Liste von Überzeugungen (beliefs) für einen Akteur zu einem bestimmten  
+     Tick wird erzeugt
+315: Erzeugung eines einfachen Netzes (net) aus Punkten (points) und 
+     Linien (lines
+316: ein Netz (net) mit Ästen (branches) und Linien (lines) wird erzeugt
+     und die Entstehung des Netzes wird beschrieben
+317: Überzeugungen (beliefs) von Akteuren werden zu einem bestimmten Tick
+     berechnet
+
+321: Ablauf einer Beeinflussung eines Akteurs durch einen anderen Akteur
+322: ein Netz einer spezieller Art für Insitutionen wird generiert
+323: Erzeugung von gemeinsamen Einstellungen (joint intentions) durch Wahl
+324: ein allgemeines Modul für Institutionen.
+
+341: zwei "Makroakteure" werden durch zwei Threads bearbeitet
+342: zwei Threads für Akteure, ein Thread für den "main_actor" und 
+     Informationsaustausch.
+
+351: aus einem Intervall werden zufällig disjunkte Teilintervalle erzeugt
+352: eine Sequenz von Abläufen von Varianten des Simulationsprogramms SMASS 
+     wird durch automatisch veränderte Parameter erzeugt.
+353: ein ganzzahliges Intervall wird in gleichelange Teilintervalle geteilt.
+354: ein 3P (produce - predate - protect) Modell wird mit automatisch 
+     veränderten Parametern sequentiell ablaufen.
+
+361: grafische Darstellung einer Funktion
+362: grafisch werden die Nachbarschaften der Akteure in einem Zellraster mit 
+     der Zeit verändert zu sehen sein
+363: ein Reihe von Balken verschiedener Farben und verschiedener Höhen wird
+     dargestellt, wobei sich die Höhen der Balken mit der Zeit ändern.
+
+411: zwei grafische Darstellungen von Veränderung von Warenwerten 
+421: ein einfaches Programm zur Simulation eines Modells von Heider
+431: ein Krisenprogramm in SMASS Format
+441: ein Beispiel für Überzeugungsänderung wird im SMASS Format programmiert
+445: ein abstakt gehaltenes Programm für ökonomische Organisation als 
+     Spezialfall von Institution.
+
+51:  Manualauszug für SWI-PROLOG
+52:  Hilfsklausen
+521: eine Liste ändern
+522: in einer Liste eine bestimmte Komponente ändern
+523: Summe bilden
+524: ein kürzerer "write" Befehl
+53:  Namenslisten
+54:  das originale SMASS Programm 
+
+
+
+
+
+
+
+
+
+
+ 
+
+

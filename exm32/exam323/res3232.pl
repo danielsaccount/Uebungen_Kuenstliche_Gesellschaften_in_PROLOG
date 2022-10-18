@@ -1,0 +1,11 @@
+intention(1, 1, act_typ(6)).
+intention(1, 2, act_typ(5)).
+intention(1, 6, act_typ(5)).
+intention(1, 7, act_typ(6)).
+intention(2, 1, act_typ(5)).
+intention(2, 2, act_typ(6)).
+intention(2, 3, act_typ(3)).
+intention(2, 4, act_typ(6)).
+intention(2, 5, act_typ(6)).
+intention(2, 6, act_typ(6)).
+intention(2, 7, act_typ(6)).

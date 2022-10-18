@@ -1,0 +1,214 @@
+% rules352.pl (the action rules in SMASS)
+
+:- dynamic fact/3 .
+
+
+% RULE 1: `donothin'. The person intentionally does not do anything. 
+
+% domain_of_wealths(50,500). sigma_wealths(20). exist_min(20).
+
+prepare(R,T,donothin) :- true.
+
+act_in_mode(donothin,A,R,T) :- feasible(donothin,A,R,T),      
+   chooseaction(donothin,A,R,T), perform(donothin,A,R,T),!.  
+   
+feasible(donothin,A,R,T) :- fact(R,T,wealth_dono(A,W)), exist_min(E),  
+   E1 is 3*E, W1 is W-E1, W1 > 0,!. 
+
+chooseaction(donothin,A,R,T) :- true,!.   
+ 
+perform(donothin,A,R,T) :- fact(R,T,wealth_dono(A,W)), W1 is W-5,
+   retract(fact(R,T,wealth_dono(A,W))),
+   asserta(fact(R,T,wealth_dono(A,W1))),!.
+
+protocol(donothin,A,R,T) :- fail.      
+adjust(donothin,A,R,T):- true.  
+adjust(donothin,R,T) :- true.         
+
+% -------------------------------------------------------------------------------
+
+% RULE 2: `schellin'. The person move to a better location, if she likes the 
+% new ambience. This rule is synchronous because an actor can move only once in a period. 
+
+prepare(R,T,schellin) :- 
+    asserta(occupied([])), gridwidth(G),
+    G1 is G*G, findall(X,between(1,G1,X),CL),
+    actors(AS), 
+    asserta(list222(CL)),
+    ( between(1,AS,A), subtract_cell(A,CL,R,T,G), fail ; true),!,
+    list222(LFree), retract(list222(LFree)), asserta(free_cells(LFree)),!. 
+
+subtract_cell(A,CL,R,T,G) :- fact(R,T,location(A,I,J)), 
+   ( member(B,CL), decompose(B,I,J,G), list222(LFree),
+     subtract(LFree,[B],LFreenew), retract(list222(LFree)), asserta(list222(LFreenew))
+   ;
+     true
+   ),!.
+
+act_in_mode(schellin,A,R,T) :- feasible(schellin,A,R,T),
+   chooseaction(schellin,A,R,T), perform(schellin,A,R,T),!.
+
+feasible(schellin,A,R,T) :- true.                            
+
+chooseaction(schellin,A,R,T) :- 
+  gridwidth(G),                  
+  fact(R,T,location(A,I,J)), scan_neighbourhood(A,G,I,J,R,T,ANSWER),
+  ( ANSWER=yes ;  calculate_move(A,R,T,G,schellin) ),!.
+
+calculate_move(A,R,T,G,schellin) :- 
+    free_cells(LFree), length(LFree,EFree),
+    asserta(pot_cells([])),
+    ( between(1,EFree,X), check_cell(X,R,T,A,G,LFree,schellin), fail ;true),!,
+    pot_cells(LC), length(LC,EE), retract(pot_cells(LC)), 
+    asserta(yes_list([])),
+    ( between(1,EE,NC), nth1(NC,LC,C), enter(C), fail ; true),!,
+    yes_list(LYES), retract(yes_list(LYES)), 
+    occupied(Locu),
+    ( LYES = []                  /* does not */
+
+    ;
+      LYES \= [], compare1(LYES,Locu,LL),
+      ( LL = []            /* does not */
+      ;
+        LL \= [], nth1(1,LL,IntC), nth1(1,IntC,B), nth1(2,IntC,I), nth1(3,IntC,J),
+        IntCnew = [A,I,J], 
+        append(Locu,[IntCnew],Locunew), retract(occupied(Locu)),
+        asserta(occupied(Locunew))
+      )
+    ),!.
+
+compare1(LYES,Locu,LL) :- 
+   length(LYES,EL), asserta(list111([])),
+   ( between(1,EL,Z), compare_cell(Z,LYES,Locu), fail ; true),!,
+   list111(LL), retract(list111(LL)),!.
+   
+compare_cell(Z,LYES,Locu) :- nth1(Z,LYES,C), nth1(1,C,B), nth1(2,C,UU), nth1(1,UU,I), nth1(2,UU,J),
+    U = [X,I,J], 
+    ( member(U,Locu)          /* nichts machen */
+    ;
+      list111(LL), append(LL,[U],LLnew), retract(list111(LL)), asserta(list111(LLnew))
+    ),!. 
+
+enter(C) :- yes_list(LYES), nth1(3,C,ANS), 
+       ( ANS = yes , append(LYES,[C],LYESnew), retract(yes_list(LYES)),
+         asserta(yes_list(LYESnew))
+       ;
+         true
+       ),!.    
+
+check_cell(X,R,T,A,G,LFree,schellin) :- nth1(X,LFree,B), decompose(B,I,J,G),
+     scan_neighbourhood(A,G,I,J,R,T,ANSWER), pot_cells(LL),
+     append(LL,[[B,[I,J],ANSWER]],LLnew), retract(pot_cells(LL)),
+     asserta(pot_cells(LLnew)),!.
+
+% -----------------------------------------------------------------------------------
+
+scan_neighbourhood(A,G,I,J,R,T,ANSWER) :-
+  type_of_neighbourhood(schellin,TW,TG),
+  make_nbh(TW,TG,I,J,L),
+  findall(N,neighb(N,L,R,T),L1), length(L1,E1), 
+  findall(N1, equal_colour(N1,A,L,R,T), L2), length(L2,E2),
+  (    
+       (    ( E1 =<  2, 1 =<  E2;  3 =<  E1, E1 =<  5, 2 =<  E2 )       
+       ; 
+            6 =<  E1, E1 =<  8, 5 =<  E2 
+       ), ANSWER=yes 
+  ;    
+       ANSWER=no
+  ),!.
+   
+neighb(N,L,R,T) :- member([I,J],L), fact(R,T,location(N,I,J)).
+
+equal_colour(N,A,L,R,T) :- member([I,J],L), fact(R,T,location(N,I,J)),
+  fact(R,T,colour(N,CN)), fact(R,T,colour(A,CA)), CA=CN.
+
+% ---------------------------------------------------------------------
+
+perform(schellin,A,R,T) :- true. 
+protocol(schellein,A,R,T) :- fail.  
+
+adjust(schellin,A,R,T) :-  
+    occupied(LL), 
+    (  LL=[]  
+    ;
+       LL \= [] , 
+         (  nth1(X,LL,[A,I,J]),           
+            fact(R,T,location(A,Iold,Jold)),
+            retract(fact(R,T,location(A,Iold,Jold))), 
+            asserta(fact(R,T,location(A,I,J)))
+         ;
+            true
+         )
+    ),!.                                         
+         
+adjust(schellin,R,T) :- free_cells(LFree), retract(free_cells(LFree)),
+    occupied(LL), retract(occupied(LL)),!.
+
+
+% --------------------------------------------------------------
+
+% RULE 3: `takeweak'. The person takes wealth from a weaker person. Here we find an asynchronous
+% rule of a strange -but realistic- way of cheating.
+
+prepare(R,T,takeweak) :- true.
+
+act_in_mode(takeweak,A,R,T) :- 
+  feasible(takeweak,A,R,T),
+  chooseaction(takeweak,A,R,T), perform(takeweak,A,R,T).  
+
+feasible(takeweak,A,R,T) :- exist_min(MIN),          
+  domain_of_values(SS), 
+  type_of_neighbourhood(takeweak,TW,GW),
+  fact(R,T,location(A,IA,JA)), 
+  make_nbh(TW,GW,IA,JA,NHA),!,
+  length(NHA,E), asserta(neighlist([])),
+  ( between(1,E,Y), locate(Y,R,T,NHA), fail; true),!,
+  neighlist(NHL), 
+
+% append('res351.pl'), write(neighlist(A,i,NHL)), write('.'), nl, told, 
+
+  length(NHL,E1),
+  retract(neighlist(NHL)),
+  fact(R,T,strength(A,SA)), 
+  asserta(n_strength([])),
+  ( between(1,E1,X), investigate(R,T,X,NHL,MIN,SA,SS), fail; true),!,
+  n_strength(LL), length(LL,E2), retract(n_strength(LL)),
+  ( E2 = 0, fail
+  ;
+    0 < E2,
+    sort(LL,LLnew), length(LLnew,E3), nth1(E3,LLnew,WW),
+    WW = [NB,SB], 
+    asserta(neighb(NB)) 
+  ),!.
+            
+locate(Y,R,T,NHA) :- nth1(Y,NHA,[I,J]), fact(R,T,location(B,I,J)),
+   neighlist(LL), append(LL,[B],LLnew), retract(neighlist(LL)), 
+   asserta(neighlist(LLnew)),!.
+
+investigate(R,T,X,NHL,MIN,SA,SS) :- n_strength(LL), 
+  (  nth1(X,NHL,NB), fact(R,T,strength(NB,SB)),
+     SB < SA, 
+     fact(R,T,wealth_take(NB,WB)), W1 is WB-(3*SS), !, 
+     MIN =< W1, append(LL,[[NB,SB]],LLnew),
+     retract(n_strength(LL)), asserta(n_strength(LLnew))
+  ;
+     true
+  ),!.    
+    
+chooseaction(takeweak,A,R,T) :- true.                 
+    
+perform(takeweak,A,R,T) :- 
+   neighb(NB), retract(neighb(NB)),
+   fact(R,T,wealth_take(A,WA)), domain_of_values(SS), S1 is 3*SS,
+   X is random(S1), WA1 is WA+X, retract(fact(R,T,wealth_take(A,WA))),
+   asserta(fact(R,T,wealth_take(A,WA1))), T1 is T+1,
+   asserta(fact(R,T1,give_to_the_strong(NB,X))).
+
+protocol(takeweak,A,R,T) :- fact(R,T,give_to_the_strong(A,X)),
+  fact(R,T,wealth_take(A,WA)), exist_min(MIN), W1 is max(WA-X,MIN),
+  retract(fact(R,T,wealth_take(A,WA))),    
+  asserta(fact(R,T,wealth_take(A,W1))),       
+  retract(fact(R,T,give_to_the_strong(A,X))).    
+
+adjust(takeweak,A,R,T) :- true.
+adjust(takeweak,R,T) :- true.
